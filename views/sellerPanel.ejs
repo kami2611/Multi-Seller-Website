@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>sellerPanel</title>
+</head>
+<style>
+    #left-side-div
+    {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        border: 1px solid black;
+        width: 20%;
+        max-width: 20%;
+    }
+    #right-side-div
+    {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        max-width: 80%;
+        width: 80%;
+    }
+    .main-container
+    {
+        display: flex;
+    }
+</style>
+<body>
+    <div class="main-container">
+        <div id="left-side-div">
+            <div>
+                <button id="add-product-button">Add a Product</button>
+            </div>
+            <div>
+                <button id="delete-product-button">Delete a Product</button>
+            </div>
+        </div>
+        <div id="right-side-div">
+            
+        </div>
+    </div>
+</body>
+<script>
+    function changeRightSideHtml(){
+        const rightSideDiv = document.getElementById('right-side-div');
+        rightSideDiv.innerHTML = '';
+        rightSideDiv.innerHTML = `<form action="/add-product" method="post">
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" required><br><br>
+                
+                <label for="price">Price:</label>
+                <input type="text" id="price" name="price" required><br><br>
+            
+                <label for="frameType">Frame Type:</label>
+                <input type="text" id="frameType" name="frameType"><br><br>
+            
+                <label for="weight">Weight:</label>
+                <input type="number" id="weight" name="weight"><br><br>
+            
+                <label for="handleSize">Handle Size:</label>
+                <input type="text" id="handleSize" name="handleSize"><br><br>
+            
+                <label for="maxTension">Max Tension:</label>
+                <input type="number" id="maxTension" name="maxTension"><br><br>
+                <button type="submit">Submit</button>
+            </form>`;
+    };
+    const add_product_button = document.getElementById('add-product-button');
+    add_product_button.addEventListener('click' , changeRightSideHtml);
+
+</script>
+</html>

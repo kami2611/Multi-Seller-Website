@@ -1,13 +1,18 @@
 const mongoose = require('mongoose');
-const User = new mongoose.Schema({
+const passportLocalMongoose = require('passport-local-mongoose');
+const userSchema = new mongoose.Schema({
+    username: { 
+        type: String,
+        required: true,
+        unique: true,
+    },
     name:
     {
         type: String,
         required: true
     },
-    shopName:{
+    storeName:{
         type: String,
-        default: '',
     },
     email:{
         type: String,
@@ -22,7 +27,7 @@ const User = new mongoose.Schema({
         type: mongoose.Types.ObjectId,
         ref:'Product'
     }],
-    createdAt: { type: Date, default: Date.now },
+    createdAt: {type: Date, default: Date.now },
 });
-
-module.exports=mongoose.model('User', User);
+userSchema.plugin(passportLocalMongoose);
+module.exports = mongoose.model('User', userSchema);
