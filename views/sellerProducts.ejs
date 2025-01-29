@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Products</title>
+</head>
+<style>
+    .sellerProducts {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.product {
+    border: 1px solid #ccc;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.product h3 {
+    font-size: 1.2em;
+    color: #333;
+}
+
+.product p {
+    font-size: 1em;
+    color: #555;
+}
+
+</style>
+<body>
+    <h1 style="text-align: center;">Edit/delete Your Products</h1>
+<div class="sellerProducts">
+    <% products.forEach(product => { %>  <!-- Loop through each product -->
+        <div id="<%= product._id %>" class="product">
+            <h3><%= product.name %></h3>  <!-- Display the product name -->
+            <p><strong>Price:</strong> $<%= product.price %></p>  <!-- Display the price -->
+            <p><strong>Frame Type:</strong> <%= product.frameType %></p>  <!-- Display the frame type -->
+            <p><strong>Weight:</strong> <%= product.weight %> g</p>  <!-- Display the weight -->
+            <p><strong>Handle Size:</strong> <%= product.handleSize %></p>  <!-- Display the handle size -->
+            <p><strong>Max Tension:</strong> <%= product.maxTension %> lbs</p>  <!-- Display max tension -->
+            <a href="/sellerPanel/SellerProducts/product/<%= product._id %>/edit"> <button>edit</button> </a>
+            <form action="/product/<%= product._id %>?_method=DELETE" method="post">
+                <button type="submit">Delete</button>
+            </form>
+        </div>
+    <% }) %>  <!-- End the loop -->
+</div>
+
+
+
+<script>
+    const editButton = document.getElementById('edit');
+    editButton.addEventListener('click', ()=>{
+
+    })
+</script>
+</body>
+
+</html>

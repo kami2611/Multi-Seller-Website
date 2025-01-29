@@ -35,15 +35,18 @@
                 <button id="add-product-button">Add a Product</button>
             </div>
             <div>
-                <button id="delete-product-button">Delete a Product</button>
+                <a href="/sellerPanel/SellerProducts">
+                    <button id="edit-delete-product-button">Edit/Delete Products</button>
+                </a>
             </div>
         </div>
         <div id="right-side-div">
-            
+
         </div>
     </div>
 </body>
 <script>
+
     function changeRightSideHtml(){
         const rightSideDiv = document.getElementById('right-side-div');
         rightSideDiv.innerHTML = '';
@@ -52,7 +55,7 @@
                 <input type="text" id="name" name="name" required><br><br>
                 
                 <label for="price">Price:</label>
-                <input type="text" id="price" name="price" required><br><br>
+                <input type="number" id="price" name="price" required><br><br>
             
                 <label for="frameType">Frame Type:</label>
                 <input type="text" id="frameType" name="frameType"><br><br>
@@ -70,6 +73,7 @@
     };
     const add_product_button = document.getElementById('add-product-button');
     add_product_button.addEventListener('click' , changeRightSideHtml);
+   
 
 </script>
 </html>

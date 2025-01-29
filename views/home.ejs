@@ -32,10 +32,18 @@
                 <a href="#">products</a>
                 <a href="#">products</a>
             </div>
-            <div class="auth">         
+            <div class="auth">  
+                <% if (!currentUser || currentUser.role!='seller') { %>
                     <a href="/start_selling"><button>Start Selling</button></a>
+                <% } %>  
             </div>
         </div>
+        <!-- <div class="body">
+            <div class="racketsCard">
+                <a href="/products">Rackets</a>
+            </div>
+        </div> -->
     </div>
+
 </body>
 </html>

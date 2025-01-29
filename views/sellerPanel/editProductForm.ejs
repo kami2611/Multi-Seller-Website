@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>edit Product Details</title>
+</head>
+<body>
+    <form action="/sellerPanel/SellerProducts/product/<%= product._id %>/?_method=PUT" method="post">
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" required value="<%= product.name %>"><br><br>
+                
+                <label for="price">Price:</label>
+                <input type="number" id="price" name="price" required value="<%= product.price %>"><br><br>
+            
+                <label for="frameType">Frame Type:</label>
+                <input type="text" id="frameType" name="frameType" value="<%= product.frameType%>"><br><br>
+            
+                <label for="weight">Weight:</label>
+                <input type="number" id="weight" name="weight" value="<%= product.weight %>"><br><br>
+            
+                <label for="handleSize">Handle Size:</label>
+                <input type="text" id="handleSize" name="handleSize" value="<%= product.handleSize %>"><br><br>
+            
+                <label for="maxTension">Max Tension:</label>
+                <input type="number" id="maxTension" name="maxTension" value="<%= product.maxTension %>"><br><br>
+                <button type="submit">Save</button>
+            </form>
+</body>
+</html>
