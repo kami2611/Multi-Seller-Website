@@ -3,5 +3,5 @@ module.exports = function isASeller(req, res, next){
     {
         return next();
     }
-    res.redirect('/start_selling');
+    res.redirect('/login');
 };
