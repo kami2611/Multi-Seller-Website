@@ -5,7 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>edit Product Details</title>
 </head>
+<style>
+    
+    
+    
+</style>
 <body>
+   
+
     <form action="/sellerPanel/SellerProducts/product/<%= product._id %>/?_method=PUT" method="post">
                 <label for="name">Name:</label>
                 <input type="text" id="name" name="name" required value="<%= product.name %>"><br><br>

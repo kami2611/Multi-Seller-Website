@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= product.name %></title>
+    <style>
+        .main-container
+        {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+        .left-side-img-container
+        {
+            border: 1px solid black;
+            width: 60%;
+        }
+        .right-side-details-container
+        {
+            padding-left: 10px;
+            border: 1px solid black;
+            width: 40%;
+        }
+        
+    </style>
+</head>
+
+<body>
+    <div class="main-container">
+        <div class="left-side-img-container">
+            <img src="#" alt="racket pic">
+        </div>
+        <div class="right-side-details-container">
+            <h2>Racket Name:<%= product.name %>  </h2>
+        <p><strong>Price:</strong> <%= product.price %> </p>
+        <p><strong>Frame Type:</strong> <%= product.frameType %></p>
+        <p><strong>Weight:</strong> <%= product.weight %></p>
+        <p><strong>Handle Size:</strong> <%= product.handleSize %></p>
+        <p><strong>Max Tension:</strong> <%= product.maxTension %></p>
+       
+        
+        <button data-id="<%= product._id %>"="" class="add-to-cart-btn">add to cart</button>
+        </div>
+    </div>
+    <script>
+        const add_to_cart_btn = document.querySelector('.add-to-cart-btn');
+        add_to_cart_btn.addEventListener('click', async()=>{
+            const product_id = add_to_cart_btn.getAttribute('data-id');
+            const response = await fetch('/cart/add', {
+                method:'POST',
+                headers:{
+                    "Content-Type":"application/json"
+                },
+                body:JSON.stringify({product_id})
+            });
+            const result = await response.json();
+            if(result.success)
+            {
+                alert('product added to cart');
+            }
+            else{
+                alert('product is already in the cart');
+            }
+        });
+
+    </script>
+</body>
+</html>

@@ -27,6 +27,10 @@ const userSchema = new mongoose.Schema({
         type: mongoose.Types.ObjectId,
         ref:'Product'
     }],
+    cart:{
+        type:mongoose.Types.ObjectId,
+        ref: 'Cart',
+    },
     createdAt: {type: Date, default: Date.now },
 });
 userSchema.plugin(passportLocalMongoose);

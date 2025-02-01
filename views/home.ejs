@@ -19,30 +19,11 @@
         gap:20px;
     }
     
+    
 </style>
 <body>
     <div>
-        <div class="header">
-            <div class="logo">
-                <h3>MULLsell</h3>
-            </div>
-            <div class="navbar">
-                <a href="/products">products</a>
-                <a href="#">products</a>
-                <a href="#">products</a>
-                <a href="#">products</a>
-            </div>
-            <div class="auth">  
-                <% if (!currentUser || currentUser.role!='seller') { %>
-                    <a href="/start_selling"><button>Start Selling</button></a>
-                <% } %>  
-            </div>
-        </div>
-        <!-- <div class="body">
-            <div class="racketsCard">
-                <a href="/products">Rackets</a>
-            </div>
-        </div> -->
+        <%- include('partials/header') %>
     </div>
 
 </body>

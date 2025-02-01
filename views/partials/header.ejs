@@ -1,0 +1,21 @@
+<div class="header">
+    <div class="logo">
+        <h3>MULLsell</h3>
+    </div>
+    <div class="navbar">
+        <a href="/products">products</a>
+        <a href="#">products</a>
+        <a href="#">products</a>
+        <a href="#">products</a>
+    </div>
+    <div class="auth">
+        <% if (!currentUser || currentUser.role!='seller') { %>
+            <a href="/start_selling"><button>start selling</button></a>
+        <% } %> 
+        <% if (currentUser) { %>
+            <% if (currentUser.role=='seller'){ %>
+             <a href="/sellerPanel"><button>seller Panel</button></a>
+            <% } %>
+        <% } %> 
+    </div>
+</div>

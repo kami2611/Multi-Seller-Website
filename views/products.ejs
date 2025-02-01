@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Products</title>
     <style>
+
+
+
+
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
@@ -53,11 +57,13 @@
 
         <div class="product-grid">
             <% for (let product of products) { %>
-            <div class="product-card">
-                <h3><%= product.name %></h3>
-                <p><%= product.price %></p>
-                <p> <%= product.owner.name%> </p>
-            </div>
+                <a href="/products/product/<%= product._id %>">
+                    <div class="product-card">
+                        <h3><%= product.name %></h3>
+                        <p><%= product.price %></p>
+                        <p> <%= product.owner.name%> </p>
+                    </div>
+                </a>
             <% } %>
         </div>
     </div>

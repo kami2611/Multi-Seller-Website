@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>cart</title>
+</head>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .cart-container {
+            width: 50%;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        li {
+            background: #fff;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .item-info {
+            flex: 1;
+        }
+
+        .item-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .item-price {
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .empty-cart {
+            text-align: center;
+            font-size: 18px;
+            color: #777;
+        }
+</style>
+<body>
+    
+    <div class="cart-container">
+        <% if (cart && cart.items.length > 0) { %>
+            <ul>
+                <form action="/cart?_method=DELETE" method="POST">
+                    <button>Delete All Cart</button>
+                </form>
+
+                <% cart.items.forEach(item => { %>
+                    <li>
+                        <h3><%= item.name %></h3>
+                        <p>Price: <%= item.price %></p>
+                        <button data-product_id="<%= item._id %>" id="delete-product-in-cart">delete</button>
+                    </li>
+                <% }) %>
+            </ul>
+        <% } else { %>
+            <p>Your cart is empty.</p>
+            <a href="/products"><button>start shopping!</button></a>
+        <% } %>
+    </div>
+    <script>
+        const deleteProductInCartBtn = document.getElementById('delete-product-in-cart');
+        deleteProductInCartBtn.addEventListener('click', async()=>{
+            const product_id = deleteProductInCartBtn.getAttribute('data-product_id');
+            console.log(product_id);
+            const response = await fetch('/cart/item', {
+                method:'DELETE',
+                headers:{
+                    "Content-Type":"application/json"
+                },
+                body:JSON.stringify({product_id}),
+            });
+            const data = await response.json();
+            if(data.success)
+            {
+                deleteProductInCartBtn.closest('li').remove();
+                alert('product removed from the cart');
+               
+            }
+            else
+            {
+                alert('Failed to remove product');
+            }
+        });
+    </script>
+</body>
+</html>

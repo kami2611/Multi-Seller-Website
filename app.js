@@ -12,7 +12,7 @@ const app = express();
 app.use(methodOverride('_method'));
 app.set('view engine', 'ejs');
 const mongoose = require('mongoose');
-const user = require('./models/user');
+
 mongoose.connect('mongodb://127.0.0.1:27017/multiSellerDb').then(() => {
     console.log("Mongoose Server Started!");
 }).catch((err) => {
@@ -43,7 +43,12 @@ app.get(['/','/home'], (req, res)=>{
 app.get('/products', async(req, res)=>{
     const products = await Product.find({}).populate('owner');
     res.render('products', {products});
-})
+});
+app.get('/products/product/:id', async(req, res)=>{
+const product =await Product.findById(req.params.id);
+res.render('productLandingPage',{product});
+});
+
 
 app.get('/login', (req, res)=>{
     res.render('login');
@@ -57,8 +62,8 @@ app.get('/start_selling', (req, res)=>{
     res.render('register');
 });
 app.post('/registerAsSeller', async(req, res) => {
-    const { shopName, name, email, password, username } = req.body;
-    const newSeller = new User({ name: name, shopName: shopName, email: email, username: username, role: 'seller' });
+    const {name, email, password, username, storeName } = req.body;
+    const newSeller = new User({ name: name, email: email, username: username, role: 'seller', storeName: storeName });
     await User.register(newSeller, password);
     newSeller.save();
     console.log('Seller registered correctly');
@@ -66,18 +71,88 @@ app.post('/registerAsSeller', async(req, res) => {
     req.login(newSeller, (err) => {
         if (err) {
             console.log('Error logging in');
-            return res.redirect('/login'); // Redirect to login page on error
+            return res.redirect('/login');
         }
-        return res.redirect('/sellerPanel'); // Redirect to the seller panel after login
+        return res.redirect('/sellerPanel');
     });
 });
+app.post('/cart/add', isASeller, async (req, res) => {
+    try {
+        const userId = req.user._id;
+        const { product_id } = req.body;
+        let cart = await Cart.findOne({ user: userId });
 
+        if (!cart) {
+            cart = new Cart({
+                user: userId,
+                items: [product_id],
+            });
+            await cart.save();
+            return res.json({ success: true, message: "New cart created and product added" });
+        }
+
+        if (!cart.items.includes(product_id)) {
+            cart.items.push(product_id);
+            await cart.save();
+            return res.json({ success: true, message: "Product added to cart!" });
+        }
+
+        return res.json({ success: false, message: "Product already in cart" });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: "Server error" });
+    }
+});
+app.delete('/cart/item', isASeller, async (req, res) => {
+    try {
+        const { product_id } = req.body;
+        let cart = await Cart.findOne({ user: req.user._id });
+
+        if (!cart) {
+            return res.json({ success: false, message: "Cart not found" });
+        }
+
+
+        // Remove the product from the cart's items array
+        cart.items = cart.items.filter(item => item.toString() !== product_id);
+
+        await cart.save();
+
+        return res.json({ success: true, message: "Product removed from cart" });
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, message: "Server error" });
+    }
+});
+
+
+app.delete('/cart', isASeller, async(req, res)=>{
+    try {
+        await Cart.findOneAndDelete({user:req.user._id});
+        res.send('successfullt delete the cart');
+    } catch (error) {
+        console.log(error);
+    }
+})
+
+app.get('/cart',isASeller, async(req, res)=>{
+    try{
+        const cart  = await Cart.findOne({user: req.user._id}).populate('items');
+        console.log(cart);
+        res.render('cart', {cart});
+    }
+    catch(err)
+    {
+        next(err);
+    } 
+});
 app.post('/add-product',isASeller, async(req, res)=>{
     const { name, frameType, weight, handleSize, maxTension, price } = req.body;
     const newProduct = new Product({name: name,price:price,frameType : frameType, weight: weight, handleSize: handleSize, maxTension: maxTension, owner: req.user._id});
     await newProduct.save();
     await User.findByIdAndUpdate(req.user._id, {$push:{products:newProduct._id}});
-
     res.redirect('/sellerPanel');
 });
 app.delete('/product/:id', async(req, res)=>{
@@ -97,8 +172,6 @@ app.get('/sellerPanel/SellerProducts',isASeller, async(req, res)=>{
 app.get('/sellerPanel/SellerProducts/product/:id/edit',isASeller, async(req, res)=>{
     const {id} = req.params;
     const product = await Product.findById(id);
-    console.log(product.name);
-    console.log(product.price);
     res.render('sellerPanel/editProductForm', {product});
 });
 app.put('/sellerPanel/SellerProducts/product/:id',isASeller, async(req, res)=>{
@@ -113,6 +186,11 @@ app.put('/sellerPanel/SellerProducts/product/:id',isASeller, async(req, res)=>{
     },{new:true});
     res.redirect('/sellerPanel/SellerProducts');
 });
+
+app.use((err, req, res,next )=>{
+    console.log(err);
+    res.redirect('/home');
+})
 
 app.listen('3000', (req, res)=>{
     console.log('ON PORT 3000');
