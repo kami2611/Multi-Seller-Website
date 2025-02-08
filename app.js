@@ -53,13 +53,37 @@ res.render('productLandingPage',{product});
 app.get('/login', (req, res)=>{
     res.render('login');
 });
+app.get('/start_selling', (req, res)=>{
+    res.render('register');
+});
+app.get('/sellerPanel',isASeller,async(req, res)=>{
+    console.log(req.user._id);
+    const products = await Product.find({owner:req.user._id});
+    res.render('sellerPanel', {products});
+});
+app.get('/sellerPanel/SellerProducts',isASeller, async(req, res)=>{
+    const products = await Product.find({owner:req.user._id});
+    res.render('sellerProducts', {products});
+});
+app.get('/sellerPanel/SellerProducts/product/:id/edit',isASeller, async(req, res)=>{
+    const {id} = req.params;
+    const product = await Product.findById(id);
+    res.render('sellerPanel/editProductForm', {product});
+});
 app.post('/login', passport.authenticate('local', {
     successRedirect: '/sellerPanel', // Redirect after successful login
     failureRedirect: '/login', // Redirect on failure
 }));
-
-app.get('/start_selling', (req, res)=>{
-    res.render('register');
+app.get('/cart',isASeller, async(req, res)=>{
+    try{
+        const cart  = await Cart.findOne({user: req.user._id}).populate('items');
+        console.log(cart);
+        res.render('cart', {cart});
+    }
+    catch(err)
+    {
+        next(err);
+    } 
 });
 app.post('/registerAsSeller', async(req, res) => {
     const {name, email, password, username, storeName } = req.body;
@@ -81,11 +105,12 @@ app.post('/cart/add', isASeller, async (req, res) => {
         const userId = req.user._id;
         const { product_id } = req.body;
         let cart = await Cart.findOne({ user: userId });
-
+        const product = await Product.findById(product_id);
         if (!cart) {
             cart = new Cart({
                 user: userId,
                 items: [product_id],
+                totalPrice: product.price
             });
             await cart.save();
             return res.json({ success: true, message: "New cart created and product added" });
@@ -93,6 +118,7 @@ app.post('/cart/add', isASeller, async (req, res) => {
 
         if (!cart.items.includes(product_id)) {
             cart.items.push(product_id);
+            cart.totalPrice += product.price;
             await cart.save();
             return res.json({ success: true, message: "Product added to cart!" });
         }
@@ -103,6 +129,13 @@ app.post('/cart/add', isASeller, async (req, res) => {
         console.error(error);
         res.status(500).json({ success: false, message: "Server error" });
     }
+});
+app.post('/add-product',isASeller, async(req, res)=>{
+    const { name, frameType, weight, handleSize, maxTension, price } = req.body;
+    const newProduct = new Product({name: name,price:price,frameType : frameType, weight: weight, handleSize: handleSize, maxTension: maxTension, owner: req.user._id});
+    await newProduct.save();
+    await User.findByIdAndUpdate(req.user._id, {$push:{products:newProduct._id}});
+    res.redirect('/sellerPanel');
 });
 app.delete('/cart/item', isASeller, async (req, res) => {
     try {
@@ -137,43 +170,14 @@ app.delete('/cart', isASeller, async(req, res)=>{
     }
 })
 
-app.get('/cart',isASeller, async(req, res)=>{
-    try{
-        const cart  = await Cart.findOne({user: req.user._id}).populate('items');
-        console.log(cart);
-        res.render('cart', {cart});
-    }
-    catch(err)
-    {
-        next(err);
-    } 
-});
-app.post('/add-product',isASeller, async(req, res)=>{
-    const { name, frameType, weight, handleSize, maxTension, price } = req.body;
-    const newProduct = new Product({name: name,price:price,frameType : frameType, weight: weight, handleSize: handleSize, maxTension: maxTension, owner: req.user._id});
-    await newProduct.save();
-    await User.findByIdAndUpdate(req.user._id, {$push:{products:newProduct._id}});
-    res.redirect('/sellerPanel');
-});
+
+
 app.delete('/product/:id', async(req, res)=>{
     const {id} = req.params;
     await Product.findByIdAndDelete(id);
     res.redirect('/sellerPanel/SellerProducts');
 })
-app.get('/sellerPanel',isASeller,async(req, res)=>{
-    console.log(req.user._id);
-    const products = await Product.find({owner:req.user._id});
-    res.render('sellerPanel', {products});
-});
-app.get('/sellerPanel/SellerProducts',isASeller, async(req, res)=>{
-    const products = await Product.find({owner:req.user._id});
-    res.render('sellerProducts', {products});
-});
-app.get('/sellerPanel/SellerProducts/product/:id/edit',isASeller, async(req, res)=>{
-    const {id} = req.params;
-    const product = await Product.findById(id);
-    res.render('sellerPanel/editProductForm', {product});
-});
+
 app.put('/sellerPanel/SellerProducts/product/:id',isASeller, async(req, res)=>{
     const { name, frameType, weight, handleSize, maxTension, price } = req.body;
     await Product.findByIdAndUpdate(req.params.id, {

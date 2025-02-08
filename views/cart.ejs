@@ -72,6 +72,7 @@
     
     <div class="cart-container">
         <% if (cart && cart.items.length > 0) { %>
+            <h1> Total Price: <%= cart.totalPrice %></h1>
             <ul>
                 <form action="/cart?_method=DELETE" method="POST">
                     <button>Delete All Cart</button>
